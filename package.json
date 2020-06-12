@@ -11,7 +11,8 @@
     "build": "npm run build:cjs && npm run build:esm",
     "build:cjs": "tsc --target es5 --outDir build/cjs --module commonjs",
     "build:esm": "tsc --target es5 --outDir build/esm --module esnext",
-    "release": "npm run clean && npm run build && npm publish"
+    "release": "npm run clean && npm run build && npm publish",
+    "prepare": "npm run build"
   },
   "keywords": [
     "react-native",
