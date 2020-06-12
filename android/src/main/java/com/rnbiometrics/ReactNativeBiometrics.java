@@ -42,6 +42,8 @@ public class ReactNativeBiometrics extends ReactContextBaseJavaModule {
         super(reactContext);
     }
 
+    private BiometricPrompt biometricPrompt;
+
     @Override
     public String getName() {
         return "ReactNativeBiometrics";
@@ -163,7 +165,7 @@ public class ReactNativeBiometrics extends ReactContextBaseJavaModule {
                                 AuthenticationCallback authCallback = new CreateSignatureCallback(promise, payload);
                                 FragmentActivity fragmentActivity = (FragmentActivity) getCurrentActivity();
                                 Executor executor = Executors.newSingleThreadExecutor();
-                                BiometricPrompt biometricPrompt = new BiometricPrompt(fragmentActivity, executor, authCallback);
+                                biometricPrompt = new BiometricPrompt(fragmentActivity, executor, authCallback);
 
                                 PromptInfo promptInfo = new PromptInfo.Builder()
                                         .setDeviceCredentialAllowed(false)
@@ -172,12 +174,22 @@ public class ReactNativeBiometrics extends ReactContextBaseJavaModule {
                                         .build();
                                 biometricPrompt.authenticate(promptInfo, cryptoObject);
                             } catch (Exception e) {
+                                biometricPrompt.cancelAuthentication();
+                                biometricPrompt = null;
                                 promise.reject("Error signing payload: " + e.getMessage(), "Error generating signature: " + e.getMessage());
                             }
                         }
                     });
         } else {
             promise.reject("Cannot generate keys on android versions below 6.0", "Cannot generate keys on android versions below 6.0");
+        }
+    }
+
+    @ReactMethod
+    public void cancel() {
+        if (biometricPrompt != null) {
+            biometricPrompt.cancelAuthentication();
+            biometricPrompt = null;
         }
     }
 
