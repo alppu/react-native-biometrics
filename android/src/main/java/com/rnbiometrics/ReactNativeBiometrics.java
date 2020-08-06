@@ -174,7 +174,10 @@ public class ReactNativeBiometrics extends ReactContextBaseJavaModule {
                                         .build();
                                 biometricPrompt.authenticate(promptInfo, cryptoObject);
                             } catch (Exception e) {
-                                biometricPrompt.cancelAuthentication();
+                                if (biometricPrompt != null) {
+                                    biometricPrompt.cancelAuthentication();
+                                }
+
                                 biometricPrompt = null;
                                 promise.reject("Error signing payload: " + e.getMessage(), "Error generating signature: " + e.getMessage());
                             }
