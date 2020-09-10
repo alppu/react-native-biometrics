@@ -20,9 +20,12 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 
+import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
@@ -117,10 +120,17 @@ public class ReactNativeBiometrics extends ReactContextBaseJavaModule {
             } else {
                 promise.reject("Cannot generate keys on android versions below 6.0", "Cannot generate keys on android versions below 6.0");
             }
-        } catch (Exception e) {
-            promise.reject("Error generating public private keys: " + e.getMessage(), "Error generating public private keys");
+        } catch (NoSuchAlgorithmException e) {
+        promise.reject("Error generating public private keys: " + e.getMessage(), "Error generating public private keys, no such algorithm: " + e.getMessage());
+    } catch (NoSuchProviderException e) {
+        promise.reject("Error generating public private keys: " + e.getMessage(), "Error generating public private keys, no such provider:  " + e.getMessage());
+    } catch (InvalidAlgorithmParameterException e) {
+            promise.reject("Error generating public private keys: " + e.getMessage(), "Error generating public private keys, invalid algorithm parameter: " + e.getMessage());
         }
-    }
+
+
+
+}
 
     @ReactMethod
     public void deleteKeys(Promise promise) {
